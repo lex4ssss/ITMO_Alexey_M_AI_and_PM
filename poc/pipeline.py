@@ -30,14 +30,15 @@ class Pipeline:
 
         chunks = self.kb.search(clean, k=2)
         draft, llm_ok, llm_error = None, True, None
-        decision = policy.decide(cls["label"], cls["confidence"], incident_mode, True, pii_found)
+        card_seen = "CARD" in pii_found
+        decision = policy.decide(cls["label"], cls["confidence"], incident_mode, True, card_seen)
 
         if decision["action"] in ("auto_reply", "suggest"):
             try:
                 draft = self.llm.generate(clean, chunks)
             except LLMUnavailable as e:
                 llm_ok, llm_error = False, str(e)
-                decision = policy.decide(cls["label"], cls["confidence"], incident_mode, False, pii_found)
+                decision = policy.decide(cls["label"], cls["confidence"], incident_mode, False, card_seen)
 
         total = (time.perf_counter() - t0) * 1000
         record = {

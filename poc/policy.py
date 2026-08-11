@@ -26,9 +26,12 @@ def risk_of(label):
     return RISK.get(label, "high")
 
 
-def decide(label, confidence, incident_mode=False, llm_ok=True, pii_found=None):
+def decide(label, confidence, incident_mode=False, llm_ok=True, card_seen=False):
     risk = risk_of(label)
     queue = QUEUE.get(label, "tier1")
+    if card_seen and risk != "safe":
+        return {"action": "escalate", "queue": queue, "risk": "high",
+                "reason": "в обращении номер карты, автоматическая обработка запрещена"}
     if risk == "high":
         return {"action": "escalate", "queue": queue, "risk": risk,
                 "reason": "категория запрещена к автоматическому закрытию"}

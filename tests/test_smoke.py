@@ -80,3 +80,10 @@ def test_kb_returns_sources():
 def test_latency_budget():
     rec = PIPE.handle("как изменить адрес доставки")
     assert rec["latency_ms"]["classify"] < 500
+
+
+def test_card_number_blocks_automation():
+    rec = PIPE.handle("оплата не проходит картой 4276 1600 1234 5678, помогите")
+    assert rec["pii_found"].get("CARD") == 1
+    assert rec["action"] == "escalate"
+    assert rec["answer"] is None

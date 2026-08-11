@@ -35,11 +35,9 @@ class TicketClassifier:
             TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), min_df=2, sublinear_tf=True),
             LogisticRegression(max_iter=2000, C=4.0, class_weight="balanced"),
         )
-        self.labels = []
 
     def fit(self, X, y):
         self.model.fit(X, y)
-        self.labels = sorted(set(y))
         return self
 
     def predict(self, text):
